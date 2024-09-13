@@ -1,0 +1,19 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: webtop-ingressroute
+  namespace: webtop
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`webtop.192.168.3.125.nip.io`)  # Update to the appropriate hostname for Webtop
+      kind: Rule
+      services:
+        - name: webtop
+          port: 3000
+      #middlewares:
+      #  - name: cors
+      #    namespace: authentik-ha
+      #  - name: authentik
+      #    namespace: authentik-ha
