@@ -8,7 +8,7 @@ spec:
     - web
   routes:
     - match: Host(`filebrowser.192.168.3.125.nip.io`)  # Update to the appropriate hostname for Webtop      
-    kind: Rule
+      kind: Rule
       services:
         - name: filebrowser
           port: 8080
