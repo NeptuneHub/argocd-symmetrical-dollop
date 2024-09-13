@@ -1,0 +1,18 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: filebrowser-ingressroute
+  namespace: filebrowser
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`filebrowser.192.168.3.125.nip.io`)  # Update to the appropriate hostname for Webtop      kind: Rule
+      services:
+        - name: filebrowser
+          port: 8080
+      #middlewares:
+      #  - name: cors
+      #    namespace: authentik-ha
+      #  - name: authentik
+      #    namespace: authentik-ha
