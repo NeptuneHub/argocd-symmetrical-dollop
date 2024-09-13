@@ -6,11 +6,12 @@ grafana:
     ingressClassName: traefik
     annotations:
       cert-manager.io/cluster-issuer: self-signed-cluster-issuer
+    hosts: []
     path: /
     tls:
-    - secretName: dash-test-tls
-       hosts:
-        - dash.192.168.3.125.nip.io
+      - secretName: dash-test-tls
+        hosts:
+          - dash.192.168.3.125.nip.io
     persistence:
     enabled: true
     type: sts
