@@ -22,7 +22,7 @@ metadata:
   name: webtop
   namespace: webtop
 spec:
-  replicas: 1
+  replicas: 0 #UPDATE THIS
   selector:
     matchLabels:
       app: webtop
