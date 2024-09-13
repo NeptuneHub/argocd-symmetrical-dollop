@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: filebrowser
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebrowser-settings
+  namespace: filebrowser
+data:
+  settings.json: |
+    {
+      "port": 80,
+      "baseURL": "",
+      "address": "",
+      "log": "stdout",
+      "database": "/database/filebrowser.db",
+      "root": "/srv"
+    }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: filebrowser-storage-pvc
+  namespace: filebrowser
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: filebrowser-db-pvc
+  namespace: filebrowser
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: filebrowser-config-pvc
+  namespace: filebrowser
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filebrowser
+  namespace: filebrowser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filebrowser
+  template:
+    metadata:
+      labels:
+        app: filebrowser
+    spec:
+      nodeSelector:  # Add the nodeSelector to force the pod to run on "pubuntu1"
+        kubernetes.io/hostname: pubuntu1
+      containers:
+      - name: filebrowser
+        image: filebrowser/filebrowser:s6
+        ports:
+        - containerPort: 80
+        securityContext:
+          runAsUser: 0  # Replace with the output of $(id -u)
+          runAsGroup: 0 # Replace with the output of $(id -g)
+        volumeMounts:
+        - name: root-storage
+          mountPath: /srv
+        - name: db-storage
+          mountPath: /database
+        - name: config-storage
+          mountPath: /.filebrowser.json
+          subPath: .filebrowser.json
+        - name: settings-config
+          mountPath: /etc/filebrowser/settings.json
+          subPath: settings.json
+      volumes:
+      - name: root-storage
+        persistentVolumeClaim:
+          claimName: filebrowser-storage-pvc
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: filebrowser-db-pvc
+      - name: config-storage
+        persistentVolumeClaim:
+          claimName: filebrowser-config-pvc
+      - name: settings-config
+        configMap:
+          name: filebrowser-settings
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filebrowser
+  namespace: filebrowser
+spec:
+  ports:
+  - port: 8080
+    targetPort: 80
+    name: http-port
+  selector:
+    app: filebrowser
