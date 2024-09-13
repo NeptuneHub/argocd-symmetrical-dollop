@@ -1,1 +1,75 @@
-
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: webtop-config-pvc
+  namespace: webtop
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+  name: webtop
+  namespace: webtop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webtop
+  template:
+    metadata:
+      labels:
+        app: webtop
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: pubuntu1
+      containers:
+      - name: webtop
+        image: lscr.io/linuxserver/webtop:ubuntu-kde
+        ports:
+        - containerPort: 3000
+        - containerPort: 3001
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        - name: SUBFOLDER
+          value: "/" # Optional
+        - name: TITLE
+          value: "Webtop" # Optional
+        volumeMounts:
+        - name: config-storage
+          mountPath: /config
+        #- name: dri-device
+        #  mountPath: /dev/dri # Optional
+        resources:
+          requests:
+            memory: "1Gi" # Optional shm size
+      volumes:
+      - name: config-storage
+        persistentVolumeClaim:
+          claimName: webtop-config-pvc
+      #- name: dri-device
+      #  hostPath:
+      #    path: /dev/dri
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: webtop
+  namespace: webtop
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+    name: http-port
+  - port: 3001
+    targetPort: 3001
+    name: secondary-port
+  selector:
+    app: webtop
