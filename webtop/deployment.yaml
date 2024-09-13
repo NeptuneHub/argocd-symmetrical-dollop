@@ -16,6 +16,9 @@ spec:
     requests:
       storage: 1Gi
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: webtop
   namespace: webtop
 spec:
