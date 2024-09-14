@@ -1,7 +1,7 @@
 authentik:
   log_level: debug
   #secret_key: ADD THIS
-  postgresql:
+  #postgresql:
     #password: ADD THIS
 
 server:
