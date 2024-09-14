@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imaginary
+  namespace: imaginary
+spec:
+  selector:
+    matchLabels:
+      app: imaginary
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: imaginary
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - imaginary
+            topologyKey: "kubernetes.io/hostname"
+      #nodeSelector:
+         #kubernetes.io/hostname: ubuntu3
+      containers:
+      - name: imaginary
+        image: nextcloud/aio-imaginary #ghcr.io/wordpress/openverse-imaginary:latest
+        args:
+        - -enable-url-source=true
+        - -concurrency=10
+        #- -url-signature-key=ZyNm0lhy98RQCUSINCRWph/L888xfAjncbZasUuh9Xs=
+        - -enable-url-signature=false
+        ports:
+        - containerPort: 9000
+        resources:
+          limits:
+            cpu: "2000m"  # 1.5 cores or 1500 milliCPU
+            memory: "2Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: imaginary
+  namespace: imaginary
+  labels:
+    app: imaginary
+spec:
+  ports:
+  - port: 9000
+    protocol: TCP
+    targetPort: 9000
+  selector:
+    app: imaginary
