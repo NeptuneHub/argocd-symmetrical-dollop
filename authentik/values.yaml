@@ -1,8 +1,8 @@
 authentik:
   log_level: debug
-  secret_key: {{ .Values.authentik.secret_key | default "default_secret_key" }}
+  #secret_key: ADD THIS
   postgresql:
-    password: {{ .Values.authentik.postgresql.password | default "default_postgresql_password" }}
+    #password: ADD THIS
 
 server:
   ingress:
@@ -27,7 +27,7 @@ server:
 postgresql:
   enabled: true
   auth:
-    password: {{ .Values.postgresql.auth.password | default "default_postgresql_password" }}
+    #password: ADD THIS
 redis:
   enabled: true
   replicas: 1
