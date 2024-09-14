@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-config-pvc
+  namespace: servarr
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-cache-pvc
+  namespace: servarr
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  namespace: servarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      initContainers:
+      - name: sysctl-config
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          sysctl -w fs.inotify.max_user_instances=8192
+          sysctl -w fs.inotify.max_user_watches=524288
+        securityContext:
+          privileged: true
+      containers:
+      - name: jellyfin
+        image: lscr.io/linuxserver/jellyfin:latest #ghcr.io/jellyfin/jellyfin:2024080505-arm64 #lscr.io/linuxserver/jellyfin:latest
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 8096
+        env:
+        - name: PUID
+          value: "0" #"1000"
+        - name: PGID
+          value: "0" #"1000"
+        - name: FFMPEG_PATH
+          value: "/usr/lib/jellyfin-ffmpeg/ffmpeg"
+        resources:
+          requests:
+            gpu.intel.com/i915: "1"
+            cpu: 1
+            memory: 4Gi
+          limits:
+            gpu.intel.com/i915: "1"
+            cpu: 2
+            memory: 8Gi
+        #lifecycle:
+        #  postStart:
+        #    exec:
+        #      command: ["sh", "-c", "echo 'fs.inotify.max_user_instances=1024' >> /etc/sysctl.d/99-inotify.conf && echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.d/99-inotify.conf && sysctl -p /etc/sysctl.d/99-inotify.conf"]
+              #command: ["sh", "-c", "sysctl -w fs.inotify.max_user_watches=3276800"]
+        volumeMounts:
+        - mountPath: /config
+          name: config
+        - mountPath: /cache
+          name: cache
+        - mountPath: /media
+          name: media
+        - mountPath: /dev/dri
+          name: render
+        - mountPath: /usr/lib/jellyfin-ffmpeg
+          name: jellyfin-ffmpeg-bin
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyfin-config-pvc
+      - name: cache
+        persistentVolumeClaim:
+          claimName: jellyfin-cache-pvc
+      - name: media
+        persistentVolumeClaim:
+          claimName: servarr-pvc
+      - name: render
+        hostPath:
+          path: /dev/dri
+          type: Directory
+      - name: jellyfin-ffmpeg-bin
+        hostPath:
+          path: /usr/lib/jellyfin-ffmpeg
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: servarr
+spec:
+  selector:
+    app: jellyfin
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8096
+  type: ClusterIP
