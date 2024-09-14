@@ -1,0 +1,57 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: authentik
+  namespace: authentik-ha
+spec:
+  forwardAuth:
+    address: http://ak-outpost-authentik-proxy-outpost.authentik-ha.svc.cluster.local:9000/outpost.goauthentik.io/auth/traefik
+    #http://ak-outpost-authentik-embedded-outpost:9000/outpost.goauthentik.io/auth/traefik #https://auth.silverycat.de
+    trustForwardHeader: true
+    authResponseHeaders:
+      - X-authentik-username
+      - X-authentik-groups
+      - X-authentik-email
+      - X-authentik-name
+      - X-authentik-uid
+      - X-authentik-jwt
+      - X-authentik-meta-jwks
+      - X-authentik-meta-outpost
+      - X-authentik-meta-provider
+      - X-authentik-meta-app
+      - X-authentik-meta-version
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cors
+  namespace: authentik-ha
+spec:
+  headers:
+    accessControlAllowOriginList:
+      - "*"
+      #- "https://auth.silverycat.de"
+      #- "http://auth.silverycat.de"
+      #- "http://readarr.192.168.3.120.nip.io"
+      #- "https://readarr.192.168.3.120.nip.io"
+    accessControlAllowMethods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    accessControlAllowHeaders:
+      - Content-Type
+      - Authorization
+    accessControlExposeHeaders:
+      - X-authentik-username
+      - X-authentik-groups
+      - X-authentik-email
+      - X-authentik-name
+      - X-authentik-uid
+      - X-authentik-jwt
+      - X-authentik-meta-jwks
+      - X-authentik-meta-outpost
+      - X-authentik-meta-provider
+      - X-authentik-meta-app
+      - X-authentik-meta-version
