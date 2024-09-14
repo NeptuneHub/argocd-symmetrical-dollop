@@ -15,9 +15,9 @@ spec:
           port: 8787
       middlewares:
         - name: cors
-          namespace: authentik-ha
+          namespace: authentik
         - name: authentik
-          namespace: authentik-ha
+          namespace: authentik
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -35,9 +35,9 @@ spec:
           port: 7878
       middlewares:
         - name: cors
-          namespace: authentik-ha
+          namespace: authentik
         - name: authentik
-          namespace: authentik-ha
+          namespace: authentik
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -55,9 +55,9 @@ spec:
           port: 8989
       middlewares:
         - name: cors
-          namespace: authentik-ha
+          namespace: authentik
         - name: authentik
-          namespace: authentik-ha
+          namespace: authentik
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -75,9 +75,9 @@ spec:
           port: 9696
       middlewares:
         - name: cors
-          namespace: authentik-ha
+          namespace: authentik
         - name: authentik
-          namespace: authentik-ha
+          namespace: authentik
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -95,9 +95,9 @@ spec:
           port: 8080
       middlewares:
         - name: cors
-          namespace: authentik-ha
+          namespace: authentik
         - name: authentik
-          namespace: authentik-ha
+          namespace: authentik
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -115,7 +115,7 @@ spec:
           port: 80
       middlewares:
         - name: cors
-          namespace: authentik-ha
+          namespace: authentik
         #- name: authentik
         #  namespace: authentik
 ---
@@ -135,6 +135,6 @@ spec:
           port: 5000
       middlewares:
         - name: cors
-          namespace: authentik-ha
+          namespace: authentik
             #- name: authentik #It don't support authentik integration
-            #namespace: authentik-ha
+            #namespace: authentik
