@@ -4,7 +4,7 @@ metadata:
   name: authentik-ingress
   namespace: authentik
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
+    cert-manager.io/cluster-issuer: self-signed-cluster-issuer
 spec:
   ingressClassName: traefik
   tls:
