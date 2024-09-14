@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: readarr-config-pvc
+  namespace: servarr
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readarr
+  namespace: servarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: readarr
+  template:
+    metadata:
+      labels:
+        app: readarr
+    spec:
+      containers:
+      - name: readarr
+        image: lscr.io/linuxserver/readarr:develop
+        ports:
+        - containerPort: 8787
+        env:
+        - name: PUID
+          value: "0" # Set to 0 for root user ID
+        - name: PGID
+          value: "0" # Set to 0 for root group ID
+        volumeMounts:
+        - name: config-storage
+          mountPath: /config
+        - name: servarr-storage
+          mountPath: /mnt/servarr2
+      volumes:
+      - name: config-storage
+        persistentVolumeClaim:
+          claimName: readarr-config-pvc
+      - name: servarr-storage
+        persistentVolumeClaim:
+          claimName: servarr-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: readarr
+  namespace: servarr
+spec:
+  ports:
+  - port: 8787
+    targetPort: 8787
+  selector:
+    app: readarr
