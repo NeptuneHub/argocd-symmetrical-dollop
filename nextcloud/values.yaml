@@ -1,0 +1,90 @@
+#This is a preconfigured values parameters for the installation of nextcloud with helm
+## Official nextcloud image version
+## ref: https://hub.docker.com/r/library/nextcloud/tags/
+##
+image:
+  repository: nextcloud
+  flavor: apache
+  tag: stable #29.0.6-apache #stable
+  pullPolicy: IfNotPresent
+
+#Deploy only on node with label app high- Check it with kubectl get node ubuntu1 --show-labels and assing with kubectl label node ubuntu1 app=high --overwrite
+nodeSelector:
+  kubernetes.io/hostname: ubuntu3
+
+# Number of replicas to be deployed
+replicaCount: 1
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+      cert-manager.io/cluster-issuer: self-signed-cluster-issuer #CHANGE CLUSTER ISSUER TO PRODUCTION
+      acme.cert-manager.io/http01-edit-in-place: "true"
+  tls:
+     - secretName: nextcloud-tls #CHANGE URL
+       hosts:
+         - nextcloud.192.168.3.125.nip.io #CHANGE URL
+nextcloud:
+  host: nextcloud.192.168.3.125.nip.io
+  username: admin
+  password: test
+  configs: {}
+
+nginx:
+  enabled: false
+  image:
+    repository: nginx
+    tag: alpine
+    pullPolicy: IfNotPresent
+  containerPort: 80
+
+persistence:
+  enabled: true
+  annotations: {}
+  storageClass: "manual" #"smb" #"local-path"
+  existingClaim: nextcloud-server-pvc
+
+phpClientHttpsFix:
+  enabled: true
+  protocol: https
+
+resources:
+  requests:
+    memory: "4000Mi"    # Start with a conservative estimate
+    cpu: "1000m"      # This is 0.5 CPU core
+  limits:
+    memory: "4000Gi"    # Allow up to 2 GiB of memory usage
+    cpu: "3000m"         # Allow up to 2 CPU cores
+#livenessProbe:
+#  enabled: false
+#  initialDelaySeconds: 60
+#  periodSeconds: 15
+#  timeoutSeconds: 5
+#  failureThreshold: 3
+#  successThreshold: 1
+
+#readinessProbe:
+#  enabled: false
+#  initialDelaySeconds: 60
+#  periodSeconds: 15
+#  timeoutSeconds: 5
+#  failureThreshold: 3
+#  successThreshold: 1
+
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 120
+  failureThreshold: 50
+
+lifecycle:
+  postStartCommand: ["/bin/bash", "-c", "apt update -y && apt install ffmpeg -y"]
+
+#hooks:
+#  pre-installation:
+#    - name: install-ffmpeg
+#      script: |
+        #!/bin/bash
+#        set -ex
+#        apt-get update
+#        apt-get install -y --no-install-recommends ffmpeg
+#        rm -rf /var/lib/apt/lists/*
