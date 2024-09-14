@@ -2,10 +2,10 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: authentik
-  namespace: authentik-ha
+  namespace: authentik
 spec:
   forwardAuth:
-    address: http://ak-outpost-authentik-proxy-outpost.authentik-ha.svc.cluster.local:9000/outpost.goauthentik.io/auth/traefik
+    address: http://ak-outpost-authentik-proxy-outpost.authentik.svc.cluster.local:9000/outpost.goauthentik.io/auth/traefik
     #http://ak-outpost-authentik-embedded-outpost:9000/outpost.goauthentik.io/auth/traefik #https://auth.silverycat.de
     trustForwardHeader: true
     authResponseHeaders:
@@ -25,7 +25,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: cors
-  namespace: authentik-ha
+  namespace: authentik
 spec:
   headers:
     accessControlAllowOriginList:
