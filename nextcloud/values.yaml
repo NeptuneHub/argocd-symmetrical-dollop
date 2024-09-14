@@ -10,7 +10,7 @@ image:
 
 #Deploy only on node with label app high- Check it with kubectl get node ubuntu1 --show-labels and assing with kubectl label node ubuntu1 app=high --overwrite
 nodeSelector:
-  kubernetes.io/hostname: ubuntu3
+  kubernetes.io/hostname: pubuntu1 #CHANGE NODE NAME
 
 # Number of replicas to be deployed
 replicaCount: 1
@@ -27,7 +27,7 @@ ingress:
 nextcloud:
   host: nextcloud.192.168.3.125.nip.io
   username: admin
-  password: test
+  password: test #CHANGE PASSWORD
   configs: {}
 
 nginx:
