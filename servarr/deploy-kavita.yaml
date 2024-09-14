@@ -17,7 +17,7 @@ metadata:
   name: kavita
   namespace: servarr
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: kavita
