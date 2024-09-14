@@ -98,7 +98,7 @@ metadata:
   name: prowlarr
   namespace: servarr
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: prowlarr
@@ -136,7 +136,7 @@ metadata:
   name: radarr
   namespace: servarr
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: radarr
@@ -174,7 +174,7 @@ metadata:
   name: sonarr
   namespace: servarr
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: sonarr
@@ -212,7 +212,7 @@ metadata:
   name: qbittorrent
   namespace: servarr
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: qbittorrent
