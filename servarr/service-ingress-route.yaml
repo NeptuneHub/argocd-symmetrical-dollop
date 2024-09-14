@@ -122,46 +122,6 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: pihole-ingressroute
-  namespace: pihole
-spec:
-  entryPoints:
-    - web
-  routes:
-    - match: Host(`pihole.192.168.3.132.nip.io`)
-      kind: Rule
-      services:
-        - name: pihole-http-https
-          port: 80
-      middlewares:
-        - name: cors
-          namespace: authentik-ha
-        - name: authentik
-          namespace: authentik-ha
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: longhorn-ingressroute
-  namespace: longhorn-system
-spec:
-  entryPoints:
-    - web
-  routes:
-    - match: Host(`longhorn.silverycat.de`)  # Updated host to reflect Longhorn
-      kind: Rule
-      services:
-        - name: longhorn-frontend
-          port: 80
-      middlewares:
-        - name: cors\
-          namespace: authentik-ha
-        - name: authentik
-          namespace: authentik-ha
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
   name: kavita-ingressroute
   namespace: servarr
 spec:
