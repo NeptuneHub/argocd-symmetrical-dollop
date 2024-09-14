@@ -10,7 +10,7 @@ metadata:
   namespace: servarr
 spec:
   capacity:
-    storage: 200Gi
+    storage: 1000Gi
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Delete
@@ -24,7 +24,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - ubuntu1 # Replace with your actual node name
+          - pubuntu1 # Assigned to the ubuntu2 node
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -37,21 +37,8 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 200Gi
+      storage: 1000Gi
   volumeName: servarr-pv
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: jackett-config-pvc
-  namespace: servarr
-spec:
-  storageClassName: local-path
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -108,44 +95,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jackett
-  namespace: servarr
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: jackett
-  template:
-    metadata:
-      labels:
-        app: jackett
-    spec:
-      containers:
-      - name: jackett
-        image: lscr.io/linuxserver/jackett:latest
-        ports:
-        - containerPort: 9117
-        env:
-        - name: PUID
-          value: "0" # Set to 0 for root user ID
-        - name: PGID
-          value: "0" # Set to 0 for root group ID
-        volumeMounts:
-        - name: config-storage
-          mountPath: /config
-        - name: servarr-storage
-          mountPath: /mnt/servarr2
-      volumes:
-      - name: config-storage
-        persistentVolumeClaim:
-          claimName: jackett-config-pvc
-      - name: servarr-storage
-        persistentVolumeClaim:
-          claimName: servarr-pvc
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: prowlarr
   namespace: servarr
 spec:
@@ -191,7 +140,7 @@ spec:
   selector:
     matchLabels:
       app: radarr
- template:
+  template:
     metadata:
       labels:
         app: radarr
@@ -288,24 +237,12 @@ spec:
         - name: servarr-storage
           mountPath: /mnt/servarr2
       volumes:
-     - name: config-storage
+      - name: config-storage
         persistentVolumeClaim:
           claimName: qbittorrent-config-pvc
       - name: servarr-storage
         persistentVolumeClaim:
           claimName: servarr-pvc
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: jackett
-  namespace: servarr
-spec:
-  ports:
-  - port: 9117
-    targetPort: 9117
-  selector:
-    app: jackett
 ---
 apiVersion: v1
 kind: Service
@@ -354,128 +291,3 @@ spec:
     targetPort: 8080
   selector:
     app: qbittorrent
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: jackett-ingress
-  namespace: servarr
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: self-signed-cluster-issuer
-spec:
-  rules:
-  - host: jackett.192.168.3.125.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: jackett
-            port:
-              number: 9117
-  tls:
-  - hosts:
-    - jackett.192.168.3.125.nip.io
-    secretName: jackett-tls
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: prowlarr-ingress
-  namespace: servarr
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: self-signed-cluster-issuer
-spec:
-  rules:
-  - host: prowlarr.192.168.3.125.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: prowlarr
-            port:
-              number: 9696
-  tls:
-  - hosts:
-    - prowlarr.192.168.3.125.nip.io
-    secretName: prowlarr-tls
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: radarr-ingress
-  namespace: servarr
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: self-signed-cluster-issuer
-spec:
-  rules:
-  - host: radarr.192.168.3.125.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: radarr
-            port:
-              number: 7878
-  tls:
-  - hosts:
-    - radarr.192.168.3.125.nip.io
-    secretName: radarr-tls
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: sonarr-ingress
-  namespace: servarr
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: self-signed-cluster-issuer
-spec:
-  rules:
-  - host: sonarr.192.168.3.125.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: sonarr
-            port:
-              number: 8989
-  tls:
-  - hosts:
-    - sonarr.192.168.3.125.nip.io
-    secretName: sonarr-tls
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: qbittorrent-ingress
-  namespace: servarr
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: self-signed-cluster-issuer
-spec:
-  rules:
-  - host: qbittorrent.192.168.3.125.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: qbittorrent
-            port:
-              number: 8080
-  tls:
-  - hosts:
-    - qbittorrent.192.168.3.125.nip.io
-    secretName: qbittorrent-tls
