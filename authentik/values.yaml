@@ -7,16 +7,12 @@ authentik:
         secretKeyRef:
           name: authentik-secrets
           key: authentik-secret-key
+
   error_reporting:
     enabled: false
+
   postgresql:
-    password: ""
-    extraEnv:
-      - name: POSTGRESQL_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: authentik-secrets
-            key: postgresql-password
+    password: ""  # Keep this blank since we're using a secret
 
 server:
   ingress:
@@ -39,16 +35,24 @@ server:
         hosts:
           - auth.192.168.3.125.nip.io
 
+  # authentik server configuration
+  name: server
+  replicas: 1
+
+worker:
+  name: worker
+  replicas: 1
+
 postgresql:
   enabled: true
   auth:
-    password: ""
-  extraEnv:
-    - name: POSTGRESQL_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: authentik-secrets
-          key: postgresql-password
+    password: ""  # Keep this blank because the password is in the secret
+    extraEnv:
+      - name: POSTGRESQL_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secrets
+            key: postgresql-password
 
 redis:
   enabled: true
@@ -57,18 +61,10 @@ redis:
 global:
   affinity:
     nodeAffinity:
-      type: hard  # Choose between none, soft, or hard
+      type: hard
       matchExpressions:
         - key: kubernetes.io/hostname
           operator: In
           values:
             - pubuntu1
-    podAntiAffinity: soft  # Choose between none, soft, or hard
-
-server:
-  name: server
-  replicas: 1
-
-worker:
-  name: worker
-  replicas: 1
+    podAntiAffinity: soft
