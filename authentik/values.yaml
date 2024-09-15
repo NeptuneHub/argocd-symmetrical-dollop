@@ -1,18 +1,12 @@
-authentik:
+ authentik:
   log_level: debug
   secret_key: ""
-  extraEnv:
-    - name: AUTHENTIK_SECRET_KEY
-      valueFrom:
-        secretKeyRef:
-          name: authentik-secrets
-          key: authentik-secret-key
 
   error_reporting:
     enabled: false
 
   postgresql:
-    password: ""  # Keep this blank since we're using a secret
+    password: ""
 
 server:
   ingress:
@@ -47,12 +41,6 @@ postgresql:
   enabled: true
   auth:
     password: ""  # Keep this blank because the password is in the secret
-    extraEnv:
-      - name: POSTGRESQL_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: authentik-secrets
-            key: postgresql-password
 
 redis:
   enabled: true
