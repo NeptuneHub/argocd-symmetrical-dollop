@@ -1,17 +1,31 @@
 authentik:
   log_level: debug
-  #secret_key: ADD THIS
-  #postgresql:
-    #password: ADD THIS
+  secret_key: ""
+  extraEnv:
+    - name: AUTHENTIK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secrets
+          key: authentik-secret-key
+  error_reporting:
+    enabled: false
+  postgresql:
+    password: ""
+    extraEnv:
+      - name: POSTGRESQL_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secrets
+            key: postgresql-password
 
 server:
   ingress:
     ingressClassName: traefik
     enabled: true
     hosts:
-      - auth.silverycat.de
+      - auth.192.168.3.125.nip.io
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-production
+      cert-manager.io/cluster-issuer: self-signed-cluster-issuer
     paths:
       - path: /
         pathType: Prefix
@@ -21,13 +35,21 @@ server:
             port:
               number: 80
     tls:
-      - secretName: auth-silverycat-de-tls
+      - secretName: authentik-tls
         hosts:
-          - auth.silverycat.de
+          - auth.192.168.3.125.nip.io
+
 postgresql:
   enabled: true
   auth:
-    #password: ADD THIS
+    password: ""
+  extraEnv:
+    - name: POSTGRESQL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secrets
+          key: postgresql-password
+
 redis:
   enabled: true
   replicas: 1
@@ -35,20 +57,18 @@ redis:
 global:
   affinity:
     nodeAffinity:
-      type: hard
+      type: hard  # Choose between none, soft, or hard
       matchExpressions:
         - key: kubernetes.io/hostname
           operator: In
           values:
             - pubuntu1
-  podAntiAffinity: soft
+    podAntiAffinity: soft  # Choose between none, soft, or hard
 
-## authentik server
 server:
   name: server
   replicas: 1
 
-## authentik worker
 worker:
   name: worker
   replicas: 1
