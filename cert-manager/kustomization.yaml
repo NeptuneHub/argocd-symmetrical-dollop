@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - ./config/namespace.yaml
   - ./config/deployment.yaml
-  - ./self-signed-cluster-issuer.yaml
+  - ./config/self-signed-cluster-issuer.yaml
