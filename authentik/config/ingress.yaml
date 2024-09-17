@@ -19,6 +19,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: authentik-app-server
+                name: authentik-server
                 port:
                   number: 80
