@@ -1,0 +1,263 @@
+# ConfigMap for non-sensitive configuration data
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: owncloud-config
+  namespace: owncloud
+data:
+  OWNCLOUD_DOMAIN: "owncloud.192.168.3.125.nip.io" # replace with your domain
+  OWNCLOUD_TRUSTED_DOMAINS: "owncloud.192.168.3.125.nip.io" # replace with trusted domains
+
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: owncloud-secrets
+  namespace: owncloud
+spec:
+  encryptedData:
+    OWNCLOUD_ADMIN_PASSWORD: AgAWAmg81PBpg4aPLUSrF5StTpCW5hKlP69bRSprse4dqID077lcFjTHTCtX4DfjhdiNq6aNuiOfQyfL0rJr0RnnQcc7N3eta2b12V3t2knC1NU9Ax/6AP+3oNdzKeDezGpyp28LQ2fSQHzW2zVJmnzBEDTq2Xv9ufoPi/0BGfdoe22jdE0h5mPbxtNs6F815Y1OUfruBge4IJv2/N63NVkVPS9Kj0vIJ1FitAoHUALonTXPIL8r0/99+zlF/wwww44HSbwrW9mgtqqZXsi4XB10bgXj8nRLPAkL+9upUB4DSbPyQK2dtFyo2b11ernkwMNqI0lJd++a3XYiVJXGd/ma0L5s9BJkFiRArXDXCMilLXrYX7/+XEai2R6UaPh7X6O0BcX6/D+G+AaLy0bx+8Yyd3ayly7npkjaLvDs5W1mhtXq5N8uvzwH38WDi1KDTYYo589D5JZfCKvAsNdGsY4w/P1zh39xKR9AU+HHdCe2//dNe4XHCgH95mN55G+9ccG8YYjVWei0a1uRctxCc0zj2zrdAlCyqKF46MIP8vyKwPoF1T1NUhToWVxiSqhQaoY3jZrwmV4R2b6Ga8EaOp4NSZWG5WjSqwbN4ihLt57nk58gttNkcM1tmLzkgIHs0WgS6HtOoeZzZ5cKDrYZKy0X7TOuGkqDt14obv3xBtjSFOEyCtskpoMW/s48N4HURb6vlI/Yl2ilxWZjo2F/pw==
+    OWNCLOUD_ADMIN_USERNAME: AgCLjVBIO7pCXYjkCsHAeBe5Sl1ud0qeU/Et72RBSA45Ysvfdr5EhI7GrD21clg1CUU8JLalj6LNvfNkDbmdnH0zPWYN/e2+X9luknj2k1YXWJSyh8Gk2ERugHtv+LuU5DCM9+J5JRJxpEOreg34RWV+uvcr+1mvZDsrY9vL/7g5stNZHDI4jHuYX2qYXw9u+4jmseMwNXBL2H3i1CHxK5vd3LBWISwyF4oBrKTetGWcpL6yMUfqKJZYdFbThB5Phs2N0yhER6pJw8xWWSvglghCpEiK1s3XaygF0tcFGM4oSCDWCYdmSpqWc6GDD9M4rNOBEJdye90uqdY93Oxljqi1eAHYzBS8pPtQkyDB+mF6nEIShQiLWxW4H0h6qEcS4P0MivTrh7ZeWCzvPEDiFrY9tQwfwt+4nMm2XBCLddpZnNC6dWJXUR+g1FSY47X2BpE4O6w2Wl70EB6RPnaCCAkwRRICogrPBHt3bdCYzN0FsqcyCFFa3QyCVNHn0pmdLpps6+CKUzrt0DhY72Sbvl7v5QJLZRXLGkpSaojuHlkeJ/hBbu69cnHRvwEMUAAiqLh7WDW8CIAc4FyfV70NSlQkb2g0CzrR6Pvf3HIGhSZDFGZWX1Jtap4c99lDtOp+xLllxy0EiQnaGajzvOqLMK4QQkeKDZ1iWwOdhvRSQeXKiKWpDVK+ebrdRrm2+RwuQj08vtVWGQ==
+    OWNCLOUD_DB_PASSWORD: AgAEBY16lifR8H/5xg6heV7OiWxFdm7Kp2UPQjS8ZAo4AtP4QpQqnOXOmG7QRB73VPJD+7/zFdAQ2xeOp7ZYj/Mvl4l7DAZQDM/H816tCcof/Ykfxk5Su3X/It939S+WSpNdSBz9q6Xk+GRzUrYgWK6q8kiUwN+NAn7cidQet/TbR4rjaYBIhc0hO+ZOE3JgYaY8hm3mvN/wA+76Cft6Qy2s6PZaKlW4vN+bPxgb/29ljPD9oMmbuHIhROg0AE5+D5rBr4kb94vhLwFX2ZpGnJ3sL/Gv3ozEdKe6ImRcboQpF50vbSsyziKoMy704qnYqotfZHEwxhNmMYkPPw+nV99UY4ysEV31vWZ8/dJtedc0BtNpHk42STjtX0zbV1Jq8OtbgoEwGB8cYHxWYfxhNxyMXNSxi1lnBGQhfRwKTCI8aOYTliQwoqjTNnkJoUZSfGC3Ub4RATChiRiQLLWYv+8QhciHV9f1r00utroFR6FzMocWDDwYyJO7HN7j/sVDZ2BZg4TpS2bMk/Dj0Lf6VC8TSH8K/+6RwJu2jHemRNoQf4m1cw1T1VCDIZZ/0KlhAnndJ9VMVIsWMdSa/wga4cys6hVsaGaVIS7uWomnEe4Yky9vtpfngaXZCelotWM9Rek8uVo6QcAMRBKEDuN1qgUw5wYpzzIkB76FlqVM1nEbK4fQVRHIzzjv1MrRdD2NjKxgXENlew89XGpaThaAGw==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: owncloud-secrets
+      namespace: owncloud
+    type: Opaque
+
+---
+# PersistentVolumeClaim for ownCloud files
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: owncloud-files-pvc
+  namespace: owncloud
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+# PersistentVolumeClaim for MariaDB
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-pvc
+  namespace: owncloud
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+# PersistentVolumeClaim for Redis
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: owncloud
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+# Deployment for ownCloud
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: owncloud
+  namespace: owncloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: owncloud
+  template:
+    metadata:
+      labels:
+        app: owncloud
+    spec:
+      containers:
+      - name: owncloud
+        image: owncloud/server:latest # use :latest tag for ownCloud
+        ports:
+        - containerPort: 8080
+        env:
+        - name: OWNCLOUD_DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: owncloud-config
+              key: OWNCLOUD_DOMAIN
+        - name: OWNCLOUD_TRUSTED_DOMAINS
+          valueFrom:
+            configMapKeyRef:
+              name: owncloud-config
+              key: OWNCLOUD_TRUSTED_DOMAINS
+        - name: OWNCLOUD_DB_TYPE
+          value: "mysql"
+        - name: OWNCLOUD_DB_NAME
+          value: "owncloud"
+        - name: OWNCLOUD_DB_USERNAME
+          value: "owncloud"
+        - name: OWNCLOUD_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: owncloud-secrets
+              key: OWNCLOUD_DB_PASSWORD
+        - name: OWNCLOUD_DB_HOST
+          value: "mariadb"
+        - name: OWNCLOUD_ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: owncloud-secrets
+              key: OWNCLOUD_ADMIN_USERNAME
+        - name: OWNCLOUD_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: owncloud-secrets
+              key: OWNCLOUD_ADMIN_PASSWORD
+        - name: OWNCLOUD_MYSQL_UTF8MB4
+          value: "true"
+        - name: OWNCLOUD_REDIS_ENABLED
+          value: "true"
+        - name: OWNCLOUD_REDIS_HOST
+          value: "redis"
+        volumeMounts:
+        - name: files-storage
+          mountPath: /mnt/data
+      volumes:
+      - name: files-storage
+        persistentVolumeClaim:
+          claimName: owncloud-files-pvc
+
+---
+# Deployment for MariaDB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: owncloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:latest # use :latest tag for MariaDB
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "owncloud"
+        - name: MYSQL_USER
+          value: "owncloud"
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: owncloud-secrets
+              key: OWNCLOUD_DB_PASSWORD
+        - name: MYSQL_DATABASE
+          value: "owncloud"
+        - name: MARIADB_AUTO_UPGRADE
+          value: "1"
+        args:
+        - "--max-allowed-packet=128M"
+        - "--innodb-log-file-size=64M"
+        volumeMounts:
+        - name: mariadb-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mariadb-storage
+        persistentVolumeClaim:
+          claimName: mariadb-pvc
+
+---
+# Deployment for Redis
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: owncloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:latest # use :latest tag for Redis
+        args: ["--databases", "1"]
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+      volumes:
+      - name: redis-storage
+        persistentVolumeClaim:
+          claimName: redis-pvc
+
+---
+# Service for ownCloud
+apiVersion: v1
+kind: Service
+metadata:
+  name: owncloud
+  namespace: owncloud
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: owncloud
+
+---
+# Service for MariaDB
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: owncloud
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+    name: mysql
+  selector:
+    app: mariadb
+
+---
+# Service for Redis
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: owncloud
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: redis
