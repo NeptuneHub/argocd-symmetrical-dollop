@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
       - name: ocis
-        image: owncloud/ocis:latest
+        image: owncloud/ocis:linux-arm
         ports:
         - containerPort: 9200
         env:
