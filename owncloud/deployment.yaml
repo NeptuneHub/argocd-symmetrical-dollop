@@ -261,3 +261,20 @@ spec:
     name: redis
   selector:
     app: redis
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: owncloud-server
+  namespace: owncloud
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`owncloud.192.168.3.125.nip.io`) # Update this to match your ownCloud domain
+      services:
+        - name: owncloud
+          port: 8080 # Assuming ownCloud is exposed on port 8080 in the Kubernetes Service
+  tls:
+    certResolver: default
