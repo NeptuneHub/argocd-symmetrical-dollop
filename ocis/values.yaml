@@ -626,19 +626,16 @@ features:
 # Ingress for oCIS.
 ingress:
   # -- Enables the Ingress.
-  enabled: false
-  # -- Ingress class to use.
-  # Uses the default ingress class if not set.
-  ingressClassName:
-  # -- Ingress annotations.
-  annotations: {}
-  # -- Labels for the ingress.
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: self-signed-cluster-issuer #CHANGE CLUSTER ISSUER TO PRODUCTION
+    acme.cert-manager.io/http01-edit-in-place: "true"
   labels: {}
-  # -- Ingress TLS configuration.
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - ocis.owncloud.test
+  tls:
+    - secretName: ocis-tls
+      hosts:
+        - ocis.192.168.3.125.nip.io
 
 # References to ConfigMaps.
 # The ConfigMaps need to be manually created.
