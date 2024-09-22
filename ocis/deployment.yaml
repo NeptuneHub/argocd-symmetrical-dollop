@@ -48,6 +48,13 @@ spec:
       labels:
         app: ocis-runtime
     spec:
+      initContainers:
+      - name: init-ocis
+        image: owncloud/ocis:latest
+        command: ["ocis", "init"]
+        volumeMounts:
+        - name: ocis-config-storage
+          mountPath: /etc/ocis
       containers:
       - name: ocis
         image: owncloud/ocis:linux-arm
