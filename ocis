@@ -1,0 +1,107 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: owncloud-ocis
+---
+# PersistentVolumeClaim for OCIS configuration data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ocis-config-pvc
+  namespace: owncloud-ocis
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# PersistentVolumeClaim for OCIS application data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ocis-data-pvc
+  namespace: owncloud-ocis
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# Deployment for OCIS (ownCloud Infinite Scale)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ocis-runtime
+  namespace: owncloud-ocis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ocis-runtime
+  template:
+    metadata:
+      labels:
+        app: ocis-runtime
+    spec:
+      containers:
+      - name: ocis
+        image: owncloud/ocis:latest
+        ports:
+        - containerPort: 9200
+        env:
+        - name: OCIS_INSECURE
+          value: "true"
+        - name: PROXY_HTTP_ADDR
+          value: "0.0.0.0:9200"
+        - name: OCIS_URL
+          value: "https://owncloud.192.168.3.125.nip.io:9200"  # Replace with your domain or IP address
+        volumeMounts:
+        - name: ocis-config-storage
+          mountPath: /etc/ocis  # Config mount path
+        - name: ocis-data-storage
+          mountPath: /var/lib/ocis  # Data mount path
+      volumes:
+      - name: ocis-config-storage
+        persistentVolumeClaim:
+          claimName: ocis-config-pvc
+      - name: ocis-data-storage
+        persistentVolumeClaim:
+          claimName: ocis-data-pvc
+---
+# Service for OCIS
+apiVersion: v1
+kind: Service
+metadata:
+  name: ocis-service
+  namespace: owncloud-ocis
+spec:
+  ports:
+  - port: 9200
+    targetPort: 9200
+    protocol: TCP
+    name: http
+  selector:
+    app: ocis-runtime
+---
+# IngressRoute for Traefik Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ocis-ingress
+  namespace: owncloud-ocis
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`owncloud.192.168.3.125.nip.io`)  # Replace with your domain or IP
+      services:
+        - name: ocis-service
+          port: 9200
+  tls:
+    certResolver: default
