@@ -50,7 +50,7 @@ spec:
     spec:
       initContainers:
       - name: init-ocis
-        image: owncloud/ocis:latest
+        image: owncloud/ocis:linux-arm
         command: ["ocis", "init"]
         volumeMounts:
         - name: ocis-config-storage
